@@ -25,7 +25,7 @@ action is now an object with many properties:
 - action.entropy -> policy distribution entropy.
 - aciton.idx -> sampled action index.
 - action.prob -> sampled probability.
-- action.log_pi -> log(sampled robability).
+- action.log_pi -> log(sampled probability).
 - action.one_hot -> one hot representation of the action.
 
 One can append action in a list or push it into ActionMemory class for later training.
