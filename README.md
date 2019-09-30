@@ -18,7 +18,7 @@ Choosing a *discrete* action in RL requiers many steps:
 6. minimize/maximize the entropy of the Policy distribution.
 
 
-**How to use it?**
+**How to use it in a gym environment?**
 
 action = Action(PolicyNet(state))
 
