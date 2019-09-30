@@ -5,6 +5,7 @@ Reinforcement Learning modules for pytorch.
 PyTorch 1.1
 
 **Action**
+
 Choosing a *discrete* action in RL requiers many steps:
 1. Getting  the linear output of the Policy network.
 2. Softmaxing it.
