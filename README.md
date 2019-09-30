@@ -27,7 +27,7 @@ state, reward, done, info = env.step(action())
 *That's it!*
 
 where PolicyNet is the policy network, state is the input for the policy network and
-action is an object with many properties:
+action is an object containing useful information about the action:
 - action.probs -> tensor of action probabilities.
 - action.entropy -> policy distribution entropy.
 - **action()** = aciton.idx -> sampled action index.
