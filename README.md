@@ -22,10 +22,7 @@ where PolicyNet is the policy network, state is the input for the policy network
 action is a kind of tensor with many properties:
 - action.probs -> tensor of action probabilities.
 - action.entropy -> tensor of the policy distribution entropy.
-
-action.prob -> sampled probability.
-
-action.log_pi -> log(sampled robability).
-
-action.one_hot -> one hot representation of the action.
+- action.prob -> sampled probability.
+- action.log_pi -> log(sampled robability).
+- action.one_hot -> one hot representation of the action.
 
