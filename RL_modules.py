@@ -2,14 +2,6 @@ import numpy as np
 import copy
 import torch
 from torch.distributions import Categorical
-# import torch.nn as nn
-# import torch.nn.functional as F
-# import torch.optim as optim
-# from torch.autograd import Variable
-# from numba import jit
-# from drawnow import drawnow
-# import matplotlib.pyplot as plt
-# from NetworkModule import Network
 
 
 def np2torch(x):
