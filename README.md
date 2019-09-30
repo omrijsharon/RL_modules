@@ -12,6 +12,7 @@ Choosing a *discrete* action in RL requiers many steps:
 6. minimize/maximize the entropy of the Policy distribution.
 
 *How to use?*
+
 action = Action(PolicyNet(state))
 
 where PolicyNet is the policy network, state is the input for the policy network and
