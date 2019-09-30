@@ -21,6 +21,7 @@ Choosing a *discrete* action in RL requiers many steps:
 **How to use it?**
 
 action = Action(PolicyNet(state))
+
 state, reward, done, info = env.step(action())
 
 *That's it!*
