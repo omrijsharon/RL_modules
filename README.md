@@ -7,6 +7,7 @@ Choosing a *discrete* action in RL requiers many steps:
 2. Softmaxing it.
 3. Sampling from the softmax Policy distribution.
 4. Saving log_pi [log(sampled action probability)].
+
 *One might even what to:*
 5. Get the chosen action in a one hot representation.
 6. minimize/maximize the entropy of the Policy distribution.
