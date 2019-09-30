@@ -1,7 +1,10 @@
 # RL_modules
 Reinforcement Learning modules for pytorch.
 
-Action:
+**Requirements:**
+PyTorch 1.1
+
+**Action**
 Choosing a *discrete* action in RL requiers many steps:
 1. Getting  the linear output of the Policy network.
 2. Softmaxing it.
@@ -14,12 +17,12 @@ Choosing a *discrete* action in RL requiers many steps:
 6. minimize/maximize the entropy of the Policy distribution.
 
 
-*How to use it?*
+**How to use it?**
 
 action = Action(PolicyNet(state))
 state, reward, done, info = env.step(action())
 
-That's it!
+*That's it!*
 
 where PolicyNet is the policy network, state is the input for the policy network and
 action is now an object with many properties:
