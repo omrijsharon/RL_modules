@@ -22,7 +22,7 @@ Choosing a *discrete* action in RL requiers many steps:
 
 action = Action(PolicyNet(state))
 
-state, reward, done, info = env.step(action())
+next_state, reward, done, info = env.step(action())
 
 *That's it!*
 
@@ -35,4 +35,36 @@ action is an object containing useful information about the action:
 - action.log_pi -> log(sampled probability).
 - action.one_hot -> one hot representation of the action.
 
-One can append action in a list or push it into ActionMemory class for later training.
+One can append action in a list or push it into ActionMemory class for later training:
+
+**ActionMemory**
+
+You can push an action into ActionMemory as a list of actions or as a single action not in a list.
+
+Examples for implementation:
+
+1st example:
+- begining of the code:
+
+actionMem = ActionMemory()
+action_list = []
+- middle of the code:
+
+action = Action(PolicyNet(state))
+
+action_list.append(action)
+- end of the code:
+
+actionMem.push(action_list)
+
+2nd example:
+- begining of the code:
+
+actionMem = ActionMemory()
+
+- middle of the code:
+
+action = Action(PolicyNet(state))
+
+actionMem.push(action)
+
