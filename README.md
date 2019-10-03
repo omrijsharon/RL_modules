@@ -35,7 +35,7 @@ Choosing a *discrete* action in RL requiers many steps:
 6. Get the chosen action in a one hot representation.
 
 #### To make our lives easier, I coded the Action module:
--The Action object is getting the linear output of the Policy network by:
+-An Action object is getting the linear output of the Policy network by:
 ```
 import RL_modules as RL
 
