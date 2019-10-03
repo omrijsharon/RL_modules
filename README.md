@@ -5,15 +5,19 @@ Reinforcement Learning modules for pytorch.
 PyTorch 1.1
 
 ## Policy Gradient loss function
+The gradient of the loss function is defined by:
 <img src="https://latex.codecogs.com/svg.latex?\Large&space;\nabla_{\theta}J=\mathbb{E}_{\pi_{\theta}}[\nabla_{\theta}log(\pi_{\theta})Q^{\pi_{\theta}}(s,a)]" title="\Large \nabla_{\theta}J=\mathbb{E}_{\pi_{\theta}}[\nabla_{\theta}log(\pi_{\theta})Q^{\pi_{\theta}}(s,a)]" />
+
+### Using PGloss
+
 Similar to using any pytorch loss function, we declare the loss function in the begining and use it later. i.e.:
 ```
 import RL_modules as RL
 
-# Beginning of the code
+#beginning of the code
 loss_func = RL.PGloss()
 
-# Backprop:
+#backprop:
 loss = loss_func(log_pi, Q)
 ```
 
