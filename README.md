@@ -47,8 +47,11 @@ and then automatically does steps 2-6 which are contained in the Action object.
 
 ### How to use it in a gym environment?
 ```
-action = Action(PolicyNet(state)) #get the linear output of the Policy network
-next_state, reward, done, info = env.step(action()) #give the environment a sampled action
+#get the linear output of the Policy network
+action = Action(PolicyNet(state))
+
+#give the environment a sampled action
+next_state, reward, done, info = env.step(action())
 ```
 *That's it!*
 
