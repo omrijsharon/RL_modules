@@ -24,7 +24,7 @@ loss = loss_func(log_pi, Q)
 -_IMPORTANT_: This function causes the gradients to **accent**, as they should. So use the function as is.
 
 
-## Action
+## Action module
 
 Choosing a *discrete* action in RL requiers many steps:
 1. Getting  the linear output of the Policy network.
@@ -34,6 +34,7 @@ Choosing a *discrete* action in RL requiers many steps:
 5. Get the entropy of the Policy distribution for later minimization/maximization.
 6. Get the chosen action in a one hot representation.
 
+####To make our lives easier, I coded the Action module:
 -The Action object is getting the linear output of the Policy network by:
 ```
 import RL_modules as RL
