@@ -37,11 +37,21 @@ Choosing a *discrete* action in RL requiers many steps:
 5. Get the chosen action in a one hot representation.
 6. minimize/maximize the entropy of the Policy distribution.
 
+-The Action object is getting the linear output of the Policy network by:
+```
+import RL_modules as RL
+#
+#
+#
+action = RL.Action(PolicyNet(state))
+```
+and then automatically does steps 2-6.
+
 
 ### How to use it in a gym environment?
 ```
-action = Action(PolicyNet(state))
-next_state, reward, done, info = env.step(action())
+action = Action(PolicyNet(state)) #get the linear output of the Policy network
+next_state, reward, done, info = env.step(action()) #give the environment a sampled action
 ```
 *That's it!*
 
