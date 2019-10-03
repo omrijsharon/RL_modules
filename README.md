@@ -47,8 +47,11 @@ and then automatically does steps 2-6 which are contained in the Action object.
 
 ### How to use it in a gym environment?
 ```
+import RL_modules as RL
+
+
 #get the linear output of the Policy network
-action = Action(PolicyNet(state))
+action = RL.Action(PolicyNet(state))
 
 #give the environment a sampled action
 next_state, reward, done, info = env.step(action())
@@ -74,12 +77,14 @@ Examples for implementation:
 
 1st example - push a list of actions:
 ```
+import RL_modules as RL
+
 # begining of the code:
-actionMemory = ActionMemory()
+actionMemory = RL.ActionMemory()
 action_list = []
 
 # middle of the code:
-action = Action(PolicyNet(state))
+action = RL.Action(PolicyNet(state))
 action_list.append(action)
 
 # end of the code:
@@ -88,11 +93,13 @@ actionMemory.push(action_list)
 
 2nd example - push an action:
 ```
+import RL_modules as RL
+
 #begining of the code:
-actionMemory = ActionMemory()
+actionMemory = RL.ActionMemory()
 
 #middle of the code:
-action = Action(PolicyNet(state))
+action = RL.Action(PolicyNet(state))
 actionMemory.push(action)
 ```
 
