@@ -21,7 +21,7 @@ loss_func = rl.PGloss()
 loss = loss_func(log_pi, Q)
 ```
 
--_IMPORTANT_: This function causes the gradients to **accent**, as they should. So use the function as is.
+-_IMPORTANT_: This function causes the gradients to **accent** (as they should) when using any optimizer for gradient descent. So use the function 'as is'.
 
 
 ## Action module
