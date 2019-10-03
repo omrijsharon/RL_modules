@@ -42,7 +42,7 @@ You can push an action into ActionMemory as a list of actions or as a single act
 
 Examples for implementation:
 
-1st example:
+1st example - push a list:
 ```
 # begining of the code:
 actionMem = ActionMemory()
@@ -56,7 +56,7 @@ action_list.append(action)
 actionMem.push(action_list)
 ```
 
-2nd example:
+2nd example - push an action:
 ```
 #begining of the code:
 actionMem = ActionMemory()
