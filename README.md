@@ -12,10 +12,10 @@ The gradient of the loss function is defined by:
 
 Similar to using any pytorch loss function, we declare the loss function in the begining and use it later. i.e.:
 ```
-import RL_modules as RL
+import RL_modules as rl
 
 #beginning of the code
-loss_func = RL.PGloss()
+loss_func = rl.PGloss()
 
 #backprop:
 loss = loss_func(log_pi, Q)
@@ -37,21 +37,21 @@ Choosing a *discrete* action in RL requiers many steps:
 #### To make our lives easier, I coded the Action module:
 - An Action object is getting the linear output of the Policy network by:
 ```
-import RL_modules as RL
+import RL_modules as rl
 
 
-action = RL.Action(PolicyNet(state))
+action = rl.Action(PolicyNet(state))
 ```
 and then automatically does steps 2-6 which are contained in the Action object.
 
 
 ### How to use it in a gym environment?
 ```
-import RL_modules as RL
+import RL_modules as rl
 
 
 #get the linear output of the Policy network
-action = RL.Action(PolicyNet(state))
+action = rl.Action(PolicyNet(state))
 
 #give the environment a sampled action
 next_state, reward, done, info = env.step(action())
@@ -77,14 +77,14 @@ Examples for implementation:
 
 1st example - push a list of actions:
 ```
-import RL_modules as RL
+import RL_modules as rl
 
 # begining of the code:
-actionMemory = RL.ActionMemory()
+actionMemory = rl.ActionMemory()
 action_list = []
 
 # middle of the code:
-action = RL.Action(PolicyNet(state))
+action = rl.Action(PolicyNet(state))
 action_list.append(action)
 
 # end of the code:
@@ -93,13 +93,13 @@ actionMemory.push(action_list)
 
 2nd example - push an action:
 ```
-import RL_modules as RL
+import RL_modules as rl
 
 #begining of the code:
-actionMemory = RL.ActionMemory()
+actionMemory = rl.ActionMemory()
 
 #middle of the code:
-action = RL.Action(PolicyNet(state))
+action = rl.Action(PolicyNet(state))
 actionMemory.push(action)
 ```
 
