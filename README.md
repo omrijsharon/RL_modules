@@ -4,7 +4,7 @@ Reinforcement Learning modules for pytorch.
 **Requirements:**
 PyTorch 1.1
 
-**Action**
+## Action
 
 Choosing a *discrete* action in RL requiers many steps:
 1. Getting  the linear output of the Policy network.
@@ -18,7 +18,7 @@ Choosing a *discrete* action in RL requiers many steps:
 6. minimize/maximize the entropy of the Policy distribution.
 
 
-**How to use it in a gym environment?**
+### How to use it in a gym environment?
 
 action = Action(PolicyNet(state))
 
@@ -37,34 +37,38 @@ action is an object containing useful information about the action:
 
 One can append action in a list or push it into ActionMemory class for later training:
 
-**ActionMemory**
+## ActionMemory
 
 You can push an action into ActionMemory as a list of actions or as a single action not in a list.
 
 Examples for implementation:
 
 1st example:
-- begining of the code:
+```
+# begining of the code:
 
 actionMem = ActionMemory()
 action_list = []
-- middle of the code:
+# middle of the code:
 
 action = Action(PolicyNet(state))
 
 action_list.append(action)
-- end of the code:
+# end of the code:
 
 actionMem.push(action_list)
+```
 
 2nd example:
-- begining of the code:
+```
+#begining of the code:
 
 actionMem = ActionMemory()
 
-- middle of the code:
+#middle of the code:
 
 action = Action(PolicyNet(state))
 
 actionMem.push(action)
+```
 
