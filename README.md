@@ -45,29 +45,24 @@ Examples for implementation:
 1st example:
 ```
 # begining of the code:
-
 actionMem = ActionMemory()
 action_list = []
+
 # middle of the code:
-
 action = Action(PolicyNet(state))
-
 action_list.append(action)
-# end of the code:
 
+# end of the code:
 actionMem.push(action_list)
 ```
 
 2nd example:
 ```
 #begining of the code:
-
 actionMem = ActionMemory()
 
 #middle of the code:
-
 action = Action(PolicyNet(state))
-
 actionMem.push(action)
 ```
 
