@@ -31,21 +31,17 @@ Choosing a *discrete* action in RL requiers many steps:
 2. Softmaxing it.
 3. Sampling from the softmax Policy distribution.
 4. Saving log_pi [log(sampled action probability)].
-
-*One might even what to:*
-
-5. Get the chosen action in a one hot representation.
-6. minimize/maximize the entropy of the Policy distribution.
+5. Get the entropy of the Policy distribution for later minimization/maximization.
+6. Get the chosen action in a one hot representation.
 
 -The Action object is getting the linear output of the Policy network by:
 ```
 import RL_modules as RL
-#
-#
-#
+
+
 action = RL.Action(PolicyNet(state))
 ```
-and then automatically does steps 2-6.
+and then automatically does steps 2-6 which are contained in the Action object.
 
 
 ### How to use it in a gym environment?
