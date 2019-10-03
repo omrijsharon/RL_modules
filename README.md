@@ -72,7 +72,7 @@ You can push an action into ActionMemory as a list of actions or as a single act
 
 Examples for implementation:
 
-1st example - push a list:
+1st example - push a list of actions:
 ```
 # begining of the code:
 actionMemory = ActionMemory()
