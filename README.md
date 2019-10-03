@@ -4,6 +4,21 @@ Reinforcement Learning modules for pytorch.
 **Requirements:**
 PyTorch 1.1
 
+## Policy Gradient loss function
+Similar to using any pytorch loss function, we declare the loss function in the begining and use it later. i.e.:
+```
+import RL_modules as RL
+
+# Beginning of the code
+loss_func = RL.PGloss()
+
+# Backprop:
+loss = loss_func(log_pi, advantage)
+```
+
+-_IMPORTANT_: This function causes the gradients to **accent**, as they should. So use the function as is.
+
+
 ## Action
 
 Choosing a *discrete* action in RL requiers many steps:
