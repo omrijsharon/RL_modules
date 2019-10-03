@@ -5,6 +5,7 @@ Reinforcement Learning modules for pytorch.
 PyTorch 1.1
 
 ## Policy Gradient loss function
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;\nabla_{\theta}J=\mathbb{E}_{\pi_{\theta}}[\nabla_{\theta}log(\pi_{\theta})Q^{\pi_{\theta}}(s,a)]" title="\Large \nabla_{\theta}J=\mathbb{E}_{\pi_{\theta}}[\nabla_{\theta}log(\pi_{\theta})Q^{\pi_{\theta}}(s,a)]" />
 Similar to using any pytorch loss function, we declare the loss function in the begining and use it later. i.e.:
 ```
 import RL_modules as RL
@@ -13,7 +14,7 @@ import RL_modules as RL
 loss_func = RL.PGloss()
 
 # Backprop:
-loss = loss_func(log_pi, advantage)
+loss = loss_func(log_pi, Q)
 ```
 
 -_IMPORTANT_: This function causes the gradients to **accent**, as they should. So use the function as is.
