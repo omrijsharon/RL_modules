@@ -66,7 +66,7 @@ action is an object containing useful information about the action:
 
 One can append action in a list or push it into ActionMemory class for later training:
 
-## ActionMemory
+## ActionMemory module
 
 You can push an action into ActionMemory as a list of actions or as a single action not in a list.
 
