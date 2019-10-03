@@ -60,7 +60,7 @@ Examples for implementation:
 1st example - push a list:
 ```
 # begining of the code:
-actionMem = ActionMemory()
+actionMemory = ActionMemory()
 action_list = []
 
 # middle of the code:
@@ -68,16 +68,16 @@ action = Action(PolicyNet(state))
 action_list.append(action)
 
 # end of the code:
-actionMem.push(action_list)
+actionMemory.push(action_list)
 ```
 
 2nd example - push an action:
 ```
 #begining of the code:
-actionMem = ActionMemory()
+actionMemory = ActionMemory()
 
 #middle of the code:
 action = Action(PolicyNet(state))
-actionMem.push(action)
+actionMemory.push(action)
 ```
 
