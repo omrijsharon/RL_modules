@@ -19,11 +19,10 @@ Choosing a *discrete* action in RL requiers many steps:
 
 
 ### How to use it in a gym environment?
-
+```
 action = Action(PolicyNet(state))
-
 next_state, reward, done, info = env.step(action())
-
+```
 *That's it!*
 
 where PolicyNet is the policy network, state is the input for the policy network and
