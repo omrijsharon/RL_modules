@@ -51,21 +51,22 @@ class PGloss(nn.Module):
 class Action:
     def __init__(self, pi):
         if len(pi) > 0 and pi.__class__.__name__ is "Tensor":
-            if is_grad_fn(pi, grad_fn='Softmax'):
+            softmax_check = is_grad_fn(pi, grad_fn='Softmax')
+            if pi.dim() == 1:
+                pi = pi.unsqueeze(0)
+            if softmax_check:
                 p = Categorical(probs=pi)
             else:
                 if is_distribution(pi):
                     p = Categorical(probs=pi)
                 else:
                     p = Categorical(logits=pi)
-            if pi.dim() == 1:
-                pi = pi.unsqueeze(0)
             self.probs = p.probs.view(pi.size(0), -1)
             self.logits = p.logits.view(pi.size(0), -1)
             self.entropy = p.entropy().view(pi.size(0), -1)
             self.idx = p.sample().view(-1)
             self.log_prob = p.log_prob(self.idx).view(-1)
-            self.prob = p.probs[self.idx].view(-1)
+            self.prob = p.probs[torch.arange(len(self.idx)), self.idx].view(-1)
             self.one_hot = idx2one_hot(self.idx, pi.size(-1))
         else:
             self.probs = torch.tensor([])
@@ -137,6 +138,12 @@ class Action:
 
     def __len__(self):
         return len(self.idx)
+
+
+x = Action([])
+print(x)
+x += Action(torch.randn((20, 5), requires_grad=True))
+print(x)
 
 
 class RewardMemory:
