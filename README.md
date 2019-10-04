@@ -95,9 +95,9 @@ action is an object containing useful information for training.
 - action[-5:] -> a new action object with the last 5 actions only.
 - action[b:n] -> a new action object with actions b to n.
 #### Size and length:
-- len(action) -> number of sampled actions contained within action.
-- action.size() -> a tuple where the 0th index equivalent to len(action) and the 1st index is the number of possible actions.
+- action.size() -> a tuple with the number of sampled actions in index 0 and the number of possible actions in index 1.
 - action.size(n) -> n-th index of action.size().
+- len(action) -> the same as action.size(0).
 #### Adding/appending/pushing new actions to an existing Action:
 To combine between action and new_action, both must be Action objects (all combination methods are equivalent):
 - action = action + new_action
