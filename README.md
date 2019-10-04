@@ -69,6 +69,7 @@ action = Action([])
 
 #Convert the Policy network's output to an Action, and add the new Action to the cumulative Action.
 action += rl.Action(PolicyNet(state))
+
 #outputs the last sampled action to the environment.
 next_state, reward, done, info = env.step(action())
 ```
