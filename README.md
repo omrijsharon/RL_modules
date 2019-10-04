@@ -45,45 +45,52 @@ Choosing a *discrete* action in RL requiers many steps:
 6. Get the chosen action in a one hot representation.
 
 #### To make our lives easier, I coded the Action module:
-An Action object is like a np.array or a torch.tensor. 
+An Action object is like a numpy.array or a torch.tensor tailored for reinforcement learning. 
 
 Just convert the output of the Policy network to an Action by:
 ```
 import RL_modules as rl
 
 y = PolicyNet(state)
-action = rl.Action(y)
-
-#or
-
-action = rl.Action(PolicyNet(state))
+action = rl.Action(y) #converting PolicyNet output to an Action
 ```
-and Action will do steps 2-6 and will save everthing you need for later training.
+and Action will execute and save the results of steps 2-6.
 
-Action automatically checks if the output of the Policy network is **linear or a distribution** and act accordingly.
+Action automatically checks if the output of the Policy network is **linear or a distribution** and acts accordingly.
 
 
 ### How to use it in a gym environment?
 ```
 import RL_modules as rl
 
-action = []
-#get the linear output of the Policy network
-action += rl.Action(PolicyNet(state))
+#begining of the code: initializing an empty Action object. 
+action = Action([])
 
-#give the environment a sampled action
+
+#Convert the Policy network's output to an Action, and add the new Action to the cumulative Action.
+action += rl.Action(PolicyNet(state))
+#outputs the last sampled action to the environment.
 next_state, reward, done, info = env.step(action())
 ```
 *That's it!*
 
-where PolicyNet is the policy network, state is the input for the policy network and
-action is an object containing useful information about the action:
+where PolicyNet is the policy network, state is the policy network's input and
+action is an object containing useful information for training:
+- **action()** -> last sampled action index.
 - action.probs -> tensor of action probabilities.
 - action.entropy -> policy distribution entropy.
-- **action()** = aciton.idx -> sampled action index.
+- action.idx -> sampled action indices.
 - action.prob -> sampled probability.
 - action.log_pi -> log(sampled probability).
-- action.one_hot -> one hot representation of the action.
+- action.one_hot -> one hot representation of the sampled actions.
+
+## Advanced usage:
+- action(0) -> sampled index of the 1st action.
+- action(-1) -> sampled index of the last action (equivalent to action()).
+- action(n) -> sampled index of the n-th action.
+# Similar to numpy.array and torch.tensor:
+- action([]) -> an empty action.
+- action[-5:] -> a new action object with the last 5 actions only.
 
 One can append action in a list or push it into ActionMemory class for later training:
 
