@@ -4,7 +4,6 @@ Reinforcement Learning modules for pytorch.
 #### Table of content
 - [x] Policy Gradient Loss
 - [x] Action
-- [x] ActionMemory
 - [x] StateMemory
 - [x] RewardMemory
 - [x] RewardHistory
@@ -46,23 +45,31 @@ Choosing a *discrete* action in RL requiers many steps:
 6. Get the chosen action in a one hot representation.
 
 #### To make our lives easier, I coded the Action module:
-- An Action object is getting the linear output of the Policy network by:
+An Action object is like a np.array or a torch.tensor. 
+
+Just convert the output of the Policy network to an Action by:
 ```
 import RL_modules as rl
 
+y = PolicyNet(state)
+action = rl.Action(y)
+
+#or
 
 action = rl.Action(PolicyNet(state))
 ```
-and then automatically does steps 2-6 which are contained in the Action object.
+and Action will do steps 2-6 and will save everthing you need for later training.
+
+Action automatically checks if the output of the Policy network is **linear or a distribution** and act accordingly.
 
 
 ### How to use it in a gym environment?
 ```
 import RL_modules as rl
 
-
+action = []
 #get the linear output of the Policy network
-action = rl.Action(PolicyNet(state))
+action += rl.Action(PolicyNet(state))
 
 #give the environment a sampled action
 next_state, reward, done, info = env.step(action())
