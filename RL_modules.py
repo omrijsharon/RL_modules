@@ -12,14 +12,32 @@ def np2torch(x):
 
 
 def idx2one_hot(idx, length):
-    x = torch.zeros(length)
-    x[idx] = 1
+    idx_range = torch.arange(idx.view(-1).size(0))
+    x = torch.zeros(len(idx_range), length)
+    x[idx_range, idx] = 1
     return x
+
 
 def normalize(x):
     x -= x.mean()
     x /= (x.std() + np.finfo(np.float32).eps)
     return x
+
+
+def is_grad_fn(x, grad_fn='Softmax'):
+    if hasattr(x, 'grad_fn'):
+        result = grad_fn.lower() in (str(x.grad_fn)).lower()
+    else:
+        result = False
+    return result
+
+
+def is_distribution(x):
+    if hasattr(x, 'sum'):
+        result = torch.prod((x.sum(-1) - 1).abs() < 1e-7).item() is 1
+    else:
+        result = False
+    return result
 
 
 class PGloss(nn.Module):
@@ -31,50 +49,91 @@ class PGloss(nn.Module):
 
 
 class Action:
-    def __init__(self, p, sample_size=(1,)):
-        self.p = Categorical(logits=p)
-        self.probs = self.p.probs.view(-1)
-        self.entropy = self.p.entropy().view(-1)
-        self.action_dict = {'probs': self.probs, 'entropy': self.entropy}
-        self.idx = self.p.sample(sample_size)
-        self.log_pi = self.p.log_prob(self.idx)
-        self.prob = self.probs[self.idx]
-        self.one_hot = idx2one_hot(self.idx, len(self.probs))
-        self.sample_dict = {'index': self.idx, 'prob': self.prob, 'log_prob': self.log_pi, 'one_hot': self.one_hot}
-        self.action_dict.update(self.sample_dict)
+    def __init__(self, pi):
+        if len(pi) > 0 and pi.__class__.__name__ is "Tensor":
+            if is_grad_fn(pi, grad_fn='Softmax'):
+                p = Categorical(probs=pi)
+            else:
+                if is_distribution(pi):
+                    p = Categorical(probs=pi)
+                else:
+                    p = Categorical(logits=pi)
+            if pi.dim() == 1:
+                pi = pi.unsqueeze(0)
+            self.probs = p.probs.view(pi.size(0), -1)
+            self.logits = p.logits.view(pi.size(0), -1)
+            self.entropy = p.entropy().view(pi.size(0), -1)
+            self.idx = p.sample().view(-1)
+            self.log_prob = p.log_prob(self.idx).view(-1)
+            self.prob = p.probs[self.idx].view(-1)
+            self.one_hot = idx2one_hot(self.idx, pi.size(-1))
+        else:
+            self.probs = torch.tensor([])
+            self.logits = torch.tensor([])
+            self.entropy = torch.tensor([])
+            self.idx = torch.LongTensor([])
+            self.log_prob = torch.tensor([])
+            self.prob = torch.tensor([])
+            self.one_hot = torch.tensor([])
 
-    def __repr__(self):
-        return 'Action ' + str(self.action_dict)
+        b = dir(self).index('entropy')
+        n = b + 7
+        self.keys = dir(self)[b:n]
 
-    def __call__(self, *args, **kwargs):
-        return self.idx
-
-
-class ActionMemory:
-    def __init__(self):
-        self.action_dict = {'probs': torch.tensor([]), 'entropy': torch.tensor([])}
-        self.sample_dict = {'index': torch.LongTensor([]), 'prob': torch.tensor([]), 'log_prob': torch.tensor([]), 'one_hot': torch.tensor([])}
-        self.action_dict.update(self.sample_dict)
-
-    def reset(self):
-        self.__init__()
+    def __add__(self, other):
+        if other.__class__.__name__ is "Action":
+            if other.size(1) == self.size(1) or other.size(1) == 0 or self.size(1) == 0:
+                self.push_mem(other)
+            else:
+                raise RuntimeError("invalid argument: Sizes of Actions must match except in dimension 0. Got " + str(other.size(1)) + " and " + str(self.size(1)) + " in dimension 1.")
+        else:
+            if other.__class__.__name__ is "Tensor":
+                raise TypeError("You tried to combine Action with Tensor. Convert the Tensor to Action by: Action(tensor) before adding it to Action.")
+            else:
+                raise TypeError("Action can only be combined with another Action. You tried to combine Action with " + other.__class__.__name__ + ".")
+        return self
 
     def push_mem(self, action):
-        for key, value in action.action_dict.items():
-            self.action_dict[key] = torch.cat((self.action_dict[key], value.view(1,-1)), dim=0)
-        self.probs = self.action_dict['probs']
-        self.entropy = self.action_dict['entropy']
-        self.idx = self.action_dict['index']
-        self.log_pi = self.action_dict['log_prob']
-        self.prob = self.action_dict['prob']
-        self.one_hot = self.action_dict['one_hot']
+        for key in self.keys:
+            self.__setattr__(key, torch.cat((self.__dict__[key], action.__dict__[key]), dim=0))
 
     def push(self, action):
-        if 'Action' in str(type(action)):
-            self.push_mem(action)
+        self.__add__(action)
+
+    def append(self, action):
+        self.__add__(action)
+
+    def size(self, i=None):
+        if self.probs.size()[0] > 0:
+            s = tuple([j for j in self.probs.size()])
+            if i is not None:
+                s = s[i]
         else:
-            for a in action:
-                self.push_mem(a)
+            s = (0, 0)
+            if i is not None:
+                s = s[i]
+        return s
+
+    def __getitem__(self, action_idx):
+        action = Action([])
+        if "int" in action_idx.__class__.__name__:
+            for key in self.keys:
+                action.__setattr__(key, torch.unsqueeze(self.__getattribute__(key)[action_idx],0))
+        else:
+            for key in self.keys:
+                action.__setattr__(key, self.__getattribute__(key)[action_idx])
+        return action
+
+
+    def __call__(self, i=None):
+        if i is None:
+            result = self.idx[-1].item()
+        else:
+            result = self.idx[i].item()
+        return result
+
+    def __repr__(self):
+        return 'Action' + str(self.idx.view(-1))[6:] + ' Size' + str(self.size())
 
     def __len__(self):
         return len(self.idx)
