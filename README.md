@@ -1,8 +1,19 @@
 # RL_modules
 Reinforcement Learning modules for pytorch.
 
+#### Table of content
+- [x] Policy Gradient Loss
+- [x] Action
+- [x] ActionMemory
+- [x] StateMemory
+- [x] RewardMemory
+- [x] RewardHistory
+- [ ] MemoryManager
+
+
 **Requirements:**
-PyTorch 1.1
+- PyTorch 1.1
+- numpy 1.16
 
 ## Policy Gradient loss function
 The gradient of the loss function is defined by:
