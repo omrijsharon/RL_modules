@@ -84,7 +84,7 @@ action is an object containing useful information for training.
 - action.idx -> a tensor of sampled action indices.
 - action.prob -> a tensor of sampled probability.
 - action.one_hot -> a tensor of sampled actions' one hot representation.
-- action.log_prob -> a tensor of log(sampled probability). This is the famous <img src="https://latex.codecogs.com/svg.latex?\Large&space;log(\pi_{\theta})" title="\Large log(\pi_{\theta})" /> from the Policy Gradient Loss which is very useful when training an agent.
+- action.log_prob -> a tensor of log(sampled probability). This is the famous  <img src="https://latex.codecogs.com/svg.latex?\Large&space;log(\pi_{\theta})" title="\Large log(\pi_{\theta})" />  from the Policy Gradient Loss which is very useful when training an agent with PG method.
 
 #### Getting sampled actions:
 - action(0) -> sampled index of the 1st action.
