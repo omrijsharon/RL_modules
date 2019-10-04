@@ -86,18 +86,34 @@ action is an object containing useful information for training.
 - action.log_pi -> log(sampled probability).
 - action.one_hot -> one hot representation of the sampled actions.
 
-
+#### Getting sampled actions:
 - action(0) -> sampled index of the 1st action.
 - action(-1) -> sampled index of the last action (equivalent to action()).
 - action(n) -> sampled index of the n-th action.
-#### Similar to numpy.array and torch.tensor:
+#### Indexing (similar to numpy.array and torch.tensor):
 - action([]) -> an empty action.
 - action[-5:] -> a new action object with the last 5 actions only.
 - action[b:n] -> a new action object with actions b to n.
+#### Size and length:
+- len(action) -> number of sampled actions contained within action.
+- action.size() -> a tuple where the 0th index equivalent to len(action) and the 1st index is the number of possible actions.
+- action.size(n) -> n-th index of action.size().
 #### Adding/appending/pushing new actions to an existing Action:
-As long as new_action is an Action object, you combine between actions in the following ways (all methods are equivalent):
+To combine between action and new_action, both must be Action objects (all combination methods are equivalent):
 - action = action + new_action
 - action += new_action
 - action.append(new_action)
 - action.push(new_action)
 
+i.e.:
+```
+import RL_modules as rl
+
+
+x = rl.Action(torch.randn(5))
+print(x.size())
+---> (1, 5)
+x += rl.Action(torch.randn((20, 5)))
+print(x.size())
+---> (21, 5)
+```
