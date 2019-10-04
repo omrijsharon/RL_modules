@@ -117,3 +117,28 @@ x += rl.Action(torch.randn((20, 5)))
 print(x.size())
 ---> (21, 5)
 ```
+
+### Coding example:
+```
+import numpy as np
+import RL_modules as rl
+import gym
+
+
+env = gym('')
+PolicyNet = Network()
+loss_func = rl.PGloss()
+    
+for episode in range(n_episodes)
+    actions = rl.Action([])
+    rewards = np.array([])
+    while env.done is False:
+        actions += rl.Action(PolicyNet(state))
+        next_state, reward, done, info = env.step(action())
+        rewards = np.append(rewards, reward)
+    loss = loss_func(actions.log_prob, calc_discount_rewards(rewards, gamma=0.99, norm=True))
+    PolicyNet.optimizer.zero_grad()
+    loss.backward()
+    PolicyNet.optimizer.step()
+
+```
