@@ -45,7 +45,7 @@ Choosing a *discrete* action in RL requiers many steps:
 6. Get the chosen action in a one hot representation.
 
 #### To make our lives easier, I coded the Action module:
-An Action object is like a numpy.array or a torch.tensor tailored for reinforcement learning. 
+An Action object is like a numpy.array or a torch.tensor specially tailored for reinforcement learning. 
 
 Just convert the output of the Policy network to an Action by:
 ```
@@ -84,47 +84,18 @@ action is an object containing useful information for training:
 - action.log_pi -> log(sampled probability).
 - action.one_hot -> one hot representation of the sampled actions.
 
-## Advanced usage:
+### Advanced usage:
 - action(0) -> sampled index of the 1st action.
 - action(-1) -> sampled index of the last action (equivalent to action()).
 - action(n) -> sampled index of the n-th action.
-# Similar to numpy.array and torch.tensor:
+#### Similar to numpy.array and torch.tensor:
 - action([]) -> an empty action.
 - action[-5:] -> a new action object with the last 5 actions only.
-
-One can append action in a list or push it into ActionMemory class for later training:
-
-## ActionMemory module
-
-You can push an action into ActionMemory as a list of actions or as a single action not in a list.
-
-Examples for implementation:
-
-1st example - push a list of actions:
-```
-import RL_modules as rl
-
-# begining of the code:
-actionMemory = rl.ActionMemory()
-action_list = []
-
-# middle of the code:
-action = rl.Action(PolicyNet(state))
-action_list.append(action)
-
-# end of the code:
-actionMemory.push(action_list)
-```
-
-2nd example - push an action:
-```
-import RL_modules as rl
-
-#begining of the code:
-actionMemory = rl.ActionMemory()
-
-#middle of the code:
-action = rl.Action(PolicyNet(state))
-actionMemory.push(action)
-```
+- action[b:n] -> a new action object with actions b to n.
+#### Adding/appending/pushing new actions to an existing Action:
+As long as new_action is an Action object, you combine between actions in the following ways (all methods are equivalent):
+- action = action + new_action
+- action += new_action
+- action.append(new_action)
+- action.push(new_action)
 
