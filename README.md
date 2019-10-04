@@ -79,12 +79,12 @@ where PolicyNet is the policy network, state is the policy network's input and
 action is an object containing useful information for training.
 ### Syntax
 - **action()** -> last sampled action index.
-- action.probs -> tensor of action probabilities.
-- action.entropy -> policy distribution entropy.
-- action.idx -> sampled action indices.
-- action.prob -> sampled probability.
-- action.log_pi -> log(sampled probability).
-- action.one_hot -> one hot representation of the sampled actions.
+- action.probs -> a tensor of action probabilities.
+- action.entropy -> a tensor of policy distribution entropy.
+- action.idx -> a tensor of sampled action indices.
+- action.prob -> a tensor of sampled probability.
+- action.one_hot -> a tensor of sampled actions' one hot representation.
+- action.log_prob -> a tensor of log(sampled probability). This is the famous <img src="https://latex.codecogs.com/svg.latex?\Large&space;log(\pi_{\theta})" title="\Large log(\pi_{\theta})" /> from the Policy Gradient Loss which is very useful when training an agent.
 
 #### Getting sampled actions:
 - action(0) -> sampled index of the 1st action.
