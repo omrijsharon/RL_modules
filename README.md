@@ -78,6 +78,7 @@ next_state, reward, done, info = env.step(action())
 where PolicyNet is the policy network, state is the policy network's input and
 action is an object containing useful information for training.
 ### Syntax
+```
 - **action()** -> last sampled action index.
 - action.probs -> tensor of action probabilities.
 - action.entropy -> policy distribution entropy.
