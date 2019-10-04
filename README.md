@@ -133,6 +133,7 @@ beta = 5e-2 #entropy loss coefficient
 for episode in range(n_episodes)
     actions = rl.Action([])
     rewards = np.array([])
+    state = env.reset()
     while env.done is False:
         actions += rl.Action(PolicyNet(state))
         next_state, reward, done, info = env.step(action())
