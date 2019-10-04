@@ -128,7 +128,8 @@ import gym
 env = gym('')
 PolicyNet = Network()
 loss_func = rl.PGloss()
-    
+beta = 5e-2 #entropy loss coefficient
+
 for episode in range(n_episodes)
     actions = rl.Action([])
     rewards = np.array([])
@@ -136,7 +137,8 @@ for episode in range(n_episodes)
         actions += rl.Action(PolicyNet(state))
         next_state, reward, done, info = env.step(action())
         rewards = np.append(rewards, reward)
-    loss = loss_func(actions.log_prob, calc_discount_rewards(rewards, gamma=0.99, norm=True))
+    discount_r = calc_discount_rewards(rewards, gamma=0.99, norm=True)    
+    loss = loss_func(actions.log_prob, discount_r) - beta*actions.log_prob.sum()
     PolicyNet.optimizer.zero_grad()
     loss.backward()
     PolicyNet.optimizer.step()
