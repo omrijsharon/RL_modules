@@ -4,14 +4,18 @@ Reinforcement Learning modules for pytorch.
 ## Table of content
 ### Losses:
 - [x] Policy Gradient Loss
+- [x] CLIP loss (PPO)
 - [x] Entropy Loss
 
 ### Objects:
-- [x] Action - Categorical/Multinomial
-- [ ] Action - Normal/OUNoise (https://github.com/vitchyr/rlkit/blob/master/rlkit/exploration_strategies/ou_strategy.py)
+- [x] Action - discrete (Categorical/Multinomial)
+- [ ] Action - continuous (Normal/OUNoise (https://github.com/vitchyr/rlkit/blob/master/rlkit/exploration_strategies/ou_strategy.py))
 - [x] Reward - no documentation!!!
 - [x] RewardHistory - no documentation!!!
 - [ ] MemoryManager
+- [x] RND (Random Network Distillation) - adding curiosity to your agent
+- [ ] GAE (general advantages estimator)
+
 
 ### What is it good for? with a code example:
 - [x] Solving openAI gym CartPole in less than 30 lines of code using RL_modules
@@ -50,8 +54,37 @@ where log_pi and actions.probs are the log of the sampled actions probability, a
 
 -_IMPORTANT_: This function causes the gradients to **accent** (as they should) when using any optimizer for gradient descent. So use the function 'as is'.
 
+## CLIP loss function (PPO)
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;J^\text{CLIP}(\theta)=\mathbb{E}[\min(r(\theta)\hat{A}_{\theta_\text{old}}(s,a),\text{clip}(r(\theta),1-\epsilon,1+\epsilon)\hat{A}_{\theta_\text{old}}(s,a))]" title="\Large J^\text{CLIP} (\theta) = \mathbb{E} [ \min( r(\theta) \hat{A}_{\theta_\text{old}}(s, a), \text{clip}(r(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_{\theta_\text{old}}(s, a))]" />
+
+A summarizes of the PPO algorithm:
+https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html#ppo
+
+### Using CLIPloss
+Example:
+```
+import RL_modules as rl
+
+CLIPloss_func = rl.CLIPloss() #option A
+#or
+CLIPloss_func = rl.CLIPloss(epsilon=0.1) #option B
+
+#backprop:
+loss = CLIPloss_func(action_old, action, advantage, epsilon=0.3) #goes well with option A
+#or
+loss = CLIPloss_func(action_old, action, advantage) #goes well with option B
+#or
+loss = CLIPloss_func(action_old, action, advantage, epsilon=0.3) #with option B: epsilon=0.1 from initialization will be ignored
+#or
+loss = CLIPloss_func(actions, rewards) #with option A: default epsilon=0.2 will be used.
+```
+where
+- action_old is the output Action object  of <img src="https://latex.codecogs.com/svg.latex?\Large&space;\pi_{\theta_\text{old}}(a\vert{s})" title="\Large \pi_{\theta_\text{old}}(a\vert{s})" />
+- action is the output Action object  of <img src="https://latex.codecogs.com/svg.latex?\Large&space;\pi_{\theta}(a\vert{s})" title="\Large \pi_{\theta}(a\vert{s})" />
+- advantage usually is the output of the old critic model.
+
 ## Entropy loss function
-The entropy loss tries to **maximize** the entropy of the policy distribution.
+The entropy loss tries to **maximize** the entropy of the policy distribution to increase exploration.
 
 ### Using Entropyloss
 Combining PGloss and Entropy loss. example:
@@ -126,8 +159,8 @@ action is an object containing useful information for training.
 - action(n) -> sampled index of the n-th action.
 #### Indexing (similar to numpy.array and torch.tensor):
 - action([]) -> an empty action.
-- action[-5:] -> a new action object with the last 5 actions only.
-- action[b:n] -> a new action object with actions b to n.
+- action[-5:] -> a new Action object with the last 5 actions only.
+- action[b:n] -> a new Action object with actions b to n.
 #### Size and length:
 - action.size() -> a tuple with the number of sampled actions in index 0 and the number of possible actions in index 1.
 - action.size(n) -> n-th index of action.size().
@@ -151,6 +184,74 @@ x += rl.Action(torch.randn((20, 5)))
 print(x.size())
 ---> (21, 5)
 ```
+
+
+## RND (Random Network Distillation)
+The goal of RND module is to add curiosity to your agent.
+It can also be used to find anomalies in data, recognize a familiar pathes and much more.
+A good explanation about the algorithm can be found here:
+https://towardsdatascience.com/reinforcement-learning-with-exploration-by-random-network-distillation-a3e412004402
+
+### Using RND
+Before calling RND module, you must initialize 2 networks (architecture issues are discussed in the next part):
+1. RNDnet - a network which will remain frozen and will only be used for calculations. No gradients will pass in this network.
+2. PRDnet - a predictor network which will try to guess the output of the RND network and learn how to be more like RNDnet.
+- _IMPORTANT_: It is recomended to add your own optimizer to PRDnet in advance. i.e.:
+```
+PRDnet.optimizer = optim.Adam(PRDnet.parameters(), lr=1e-3)
+```
+Initializing (after RNDnet and PRDnet exist):
+```
+import RL_modules as rl
+
+
+rnd = RND(RNDnet, PRDnet, memory_capacity = 5000)
+```
+In this case, the RND module will save up to 5000 inputs to learn from. When reaching the memory_capacity, random inputs will be deleted. This should prevent catastrophic forgetting.
+
+Then use one of the two:
+1. Getting the intrinsic RND curiosity reward (immuned to the noisy-TV problem):
+```
+next_state = rl.np2torch(next_state)
+intrinsic_reward = rnd(next_state)
+```
+_OR_
+
+2. Getting Next-State Prediction (NSP) reward (NOT immuned to the noisy-TV problem):
+```
+state = rl.np2torch(state)
+intrinsic_reward = rnd(torch.cat((state, action.one_hot), dim=-1))
+```
+### Architecture
+The RNDnet and PRDnet can have the same architecture (it is recommended) but they must be initialized with different weights.
+#### What should be the dimensions of the input/output of the networks?
+The networks must have the same input and output dimensions. The number of dimensions may differ only in the hidden layers.
+##### Input dimensions
+Notice from the last part that:
+1. The input to the RND module is a state. If you use RND curiosity reward, the networks' input dimension should be the same as the state dimension.
+2. The input to the RND module is a state + action. If you use NSP reward, the networks' input dimension should be the sum of the state and action dimensions.
+##### Output dimensions
+You can choose the output dimensions of the RNDnet and PRDnet with no constraints. Yet, you must remember:
+1. The length of a diagonal of a 1x1 square is <img src="https://latex.codecogs.com/svg.latex?\Large&space;\sqrt{2}" title="\Large \sqrt{2}" />. The length of a diagonal of a 1x1x1 cube is <img src="https://latex.codecogs.com/svg.latex?\Large&space;\sqrt{3}" title="\Large \sqrt{3}" />. The higher the dimention, the more volume the shape has and the farther away random points within the shape are.
+2. Higher dimentsion in the output layer might slow down the calculations and the learning process.
+
+A recommended number of dimentions for the output is 2-4.
+
+### Updating PRDnet
+Each time you use rnd, such as rnd(next_state), the input is saved but not learned. To start learning the saved inputs, write:
+```
+rnd.learn(n_epochs=10, chunk_size=1000)
+```
+This line says that the the inputs will be processed in chunks of 1000 (big chunks needs lots of memory).
+n_ epochs is the number of epochs in learning process (the number of optimizer steps).
+
+### Encoder-Decoder/Autoencoder + RND
+Encoder-Decoder or autoencoder networks can be also used with RND. Insert the Encoder part of the network as an RNDnet. Let the bottleneck be the output layer and initialize PRDnet with the same architecture as the Encoder. Since the Encoder changes as it learns, you should update the RNDnet when it happens. i.e.:
+```
+VAE.optimizer.step()
+rnd.RNDnet = VAE.Encoder
+```
+
 
 ## What is it good for?
 ### Solving openAI gym CartPole in less than 30 lines of code using RL_modules
@@ -297,7 +398,7 @@ Adding/appending the cumulative reward from the last episode to a RewardHistory 
 ```
 reward_history += rewards
 ```
-Updating us every 10 episodes with the cumulative reward of the last episode:
+Updating every 10 episodes with the cumulative reward of the last episode:
 ```
 if episode%10 == 0:
     print("Episode #", episode, " score: ", rewards.sum().item())
