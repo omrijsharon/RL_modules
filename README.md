@@ -82,7 +82,7 @@ The network architecture:
 torch.manual_seed(41)
 PolicyNet = Network(L=[4,*1*[8],2], lr=lr, optimizer='RMSprop', dropout=0)
 ```
-Setting loss attributes with loss functions to the Policy network:
+Setting the loss functions:
 ```
 PolicyNet.PGloss = rl.PGloss()
 PolicyNet.Entropyloss = rl.Entropyloss()
