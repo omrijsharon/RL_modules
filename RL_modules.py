@@ -61,6 +61,19 @@ class PGloss(nn.Module):
         return (-log_pi*discounted_rewards).sum()
 
 
+class CLIPloss(nn.Module):
+    '''PPO loss function'''
+    def __init__(self, epsilon=0.2):
+        super(CLIPloss, self).__init__()
+        self.epsilon = epsilon
+
+    def forward(self, action_old, action, advantage, epsilon=None):
+        if epsilon is not None:
+            self.epsilon = epsilon
+        r = action.prob/action_old.prob
+        return (torch.min(r*advantage, torch.clamp(r, 1-self.epsilon, 1+self.epsilon))*advantage).sum()
+
+
 class Entropyloss(nn.Module):
     def __init__(self):
         super(Entropyloss, self).__init__()
@@ -323,3 +336,78 @@ class MemoryManager:
 
         if done is not None:
             self.memory['State'].push(done=done)
+
+
+class RND:
+    def __init__(self, RNDnet, PRDnet, memory_capacity=2000):
+        '''
+        :param RNDnet: Random Network which will remain frozen.
+        :param PRDnet: Predictor Network that will learn the RNDnet output.
+        :param memory_capacity: number of samples/state that will be stored and learned from.
+        parameters for optimizer should be called:
+            RND.PRDnet.parameters()
+        '''
+        self.RNDnet = RNDnet
+        self.PRDnet = PRDnet
+        self.learn_on_spot = hasattr(self.PRDnet, 'optimizer')
+        if self.learn_on_spot is False:
+            self.optimizer_setup()
+        self.memory_capacity = memory_capacity
+        self.mem = torch.tensor([])
+
+    def __call__(self, input):
+        '''
+        :param input:
+        https://openai.com/blog/reinforcement-learning-with-prediction-based-rewards/
+        Random Network Distillation (RND) *recommended:
+            The authors recommend the input to be obs(t+1) to overcome the 3 prediction error factors.
+        Next-State Prediction (NSP) *less-recommended:
+            Using input as cat(obs(t), action) makes it less resilient to the noisy-TV-Problem.
+        :return:
+            curiosity reward for each step
+        '''
+        if len(input.size()) < 2:
+            input = input.view(1, -1)
+        self.mem = torch.cat((self.mem, input), dim=0)
+        with torch.no_grad():
+            self.RNDnet.eval()
+            self.PRDnet.eval()
+            self.RND_reward = torch.sum((self.RNDnet(input) - self.PRDnet(input)) ** 2, dim=1).detach()
+        return self.RND_reward
+
+    def backward(self, chunk_size=100):
+        self.RNDnet.eval()
+        self.PRDnet.train()
+        chunks = [self.mem[i:i + chunk_size, :] for i in range(0, len(self.mem), chunk_size)]
+        for i, chunk in enumerate(chunks):
+            if i < len(chunks) - 1:
+                retain_graph = True
+            else:  # last chunk
+                retain_graph = False
+            with torch.no_grad():
+                RND_out = self.PRDnet(self.mem)
+            PRD_out = self.PRDnet(self.mem)
+            self.RND_loss = ((RND_out - PRD_out) ** 2).sum()
+            self.RND_loss.backward(retain_graph=retain_graph)
+        mem_diff = len(self.mem) - self.memory_capacity
+        if mem_diff > 0:
+            idx = torch.randperm(len(self.mem))[mem_diff:]
+            self.mem = self.mem[idx]
+
+    def learn(self, n_epochs=1, chunk_size=100):
+        if self.learn_on_spot:
+            for epoch in range(n_epochs):
+                self.PRDnet.optimizer.zero_grad()
+                self.backward(chunk_size=chunk_size)
+                self.PRDnet.optimizer.step()
+        else:
+            raise Exception(
+                'Error in RND->learn: PRDnet has no optimizer within it. Add an optimizer attribute with an optimizer to PRDnet to use this function.')
+
+    def optimizer_setup(self, optimizer_name='Adam', lr=1e-3, weight_decay=0):
+        self.lr = lr
+        self.weight_decay = weight_decay
+        if 'Adam' in optimizer_name:
+            self.PRDnet.optimizer = optim.Adam(self.PRDnet.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+        elif 'RMSprop' in optimizer_name:
+            self.PRDnet.optimizer = optim.RMSprop(self.PRDnet.parameters(), lr=self.lr, weight_decay=self.weight_decay, alpha=0.99, eps=1e-8, momentum=0, centered=False)
