@@ -222,7 +222,7 @@ intrinsic_reward = rnd(torch.cat((state, action.one_hot), dim=-1))
 ```
 ### Architecture
 The RNDnet and PRDnet can have the same architecture (it is recommended) but they must be initialized with different weights.
-- What should be the dimensions of the input/output of the networks?
+####What should be the dimensions of the input/output of the networks?
 The networks must have the same input/output dimensions. The number of dimensions may differ only in the hidden layers.
 Notice in the last part that in:
 1. The input to the RND module is a state. If you use RND curiosity reward, the networks' input dimension should be the same as the state dimension.
