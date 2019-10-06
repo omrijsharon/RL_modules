@@ -55,16 +55,30 @@ where log_pi and actions.probs are the log of the sampled actions probability, a
 -_IMPORTANT_: This function causes the gradients to **accent** (as they should) when using any optimizer for gradient descent. So use the function 'as is'.
 
 ## CLIP loss function (PPO)
-<img src="https://latex.codecogs.com/svg.latex?\Large&space;J^\text{CLIP}(\theta)=\mathbb{E}[\min(r(\theta)\hat{A}_{\theta_\text{old}}(s,a),clip(r(\theta),1-\epsilon,1+\epsilon)\hat{A}_{\theta_\text{old}}(s,a))]" title="\Large J^\text{CLIP} (\theta) = \mathbb{E} [ \min( r(\theta) \hat{A}_{\theta_\text{old}}(s, a), \text{clip}(r(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_{\theta_\text{old}}(s, a))]" />
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;J^\text{CLIP}(\theta)=\mathbb{E}[\min(r(\theta)\hat{A}_{\theta_\text{old}}(s,a),\text{clip}(r(\theta),1-\epsilon,1+\epsilon)\hat{A}_{\theta_\text{old}}(s,a))]" title="\Large J^\text{CLIP} (\theta) = \mathbb{E} [ \min( r(\theta) \hat{A}_{\theta_\text{old}}(s, a), \text{clip}(r(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_{\theta_\text{old}}(s, a))]" />
 
-The entropy loss tries to **maximize** the entropy of the policy distribution to increase exploration.
+A summarizes of the PPO algorithm:
+https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html#ppo
 
 ### Using CLIPloss
 Combining PGloss and Entropy loss. example:
 ```
 import RL_modules as rl
 
-#beginning of the code
+CLIPloss_func = rl.CLIPloss() #option A
+#or
+CLIPloss_func = rl.CLIPloss(epsilon=0.1) #option B
+
+#backprop:
+loss = CLIPloss_func(action_old, action, advantage, epsilon=0.3) #goes well with option A
+#or
+loss = CLIPloss_func(action_old, action, advantage) #goes well with option B
+#or
+loss = CLIPloss_func(action_old, action, advantage, epsilon=0.3) #with option B: epsilon=0.1 from initialization will be ignored
+#or
+loss = CLIPloss_func(actions, rewards) #with option A: default epsilon=0.2 will be used.
+```
+where action_old is the output Action object  of <img src="https://latex.codecogs.com/svg.latex?\Large&space;\pi_{\theta_\text{old}}(a \vert s)" title="\Large \pi_{\theta_\text{old}}(a \vert s)" />
 
 ## Entropy loss function
 The entropy loss tries to **maximize** the entropy of the policy distribution to increase exploration.
