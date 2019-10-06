@@ -12,6 +12,9 @@ Reinforcement Learning modules for pytorch.
 - [x] Reward - no documentation!!!
 - [x] RewardHistory - no documentation!!!
 - [ ] MemoryManager
+- [ ] RND (Random Network Distillation)
+- [ ] GAE (general advantages estimator)
+
 
 ### What is it good for? with a code example:
 - [x] Solving openAI gym CartPole in less than 30 lines of code using RL_modules
