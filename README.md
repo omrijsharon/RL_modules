@@ -73,7 +73,7 @@ gamma = 0.99 #discount factor
 n_episodes = 200 #number of episodes
 ```
 Initializing a policy network using NetworkModule(https://github.com/omrijsharon/NetworkModule).
-The Policy network suppose to get a state and outputs a number for each action (that becomes actions distribution later on).
+The Policy network suppose to get a state as an input and outputs a number for each action (that becomes actions distribution later on).
 The network architecture:
 - an input layer with 4 nodes - because the state shape is 4.
 - 1 hidden layer with 8 nodes - these numbers are hyperparameters.
