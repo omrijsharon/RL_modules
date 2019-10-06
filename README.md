@@ -236,7 +236,7 @@ You can choose the output dimensions of the RNDnet and PRDnet with no constraint
 A recommended number of dimentions for the output is 2-4.
 
 ### Encoder-Decoder/Autoencoder + RND
-Encoder-Decoder or autoencoder networks can be also used with RND. Insert the Encoder part of the network as an RNDnet. Let the bottleneck be the output layer and initialize PRDnet with the same architecture as the Encoder. Since the Encoder changes as it learns, you should update the RNDnet when this happens. i.e.:
+Encoder-Decoder or autoencoder networks can be also used with RND. Insert the Encoder part of the network as an RNDnet. Let the bottleneck be the output layer and initialize PRDnet with the same architecture as the Encoder. Since the Encoder changes as it learns, you should update the RNDnet when it happens. i.e.:
 ```
 VAE.optimizer.step()
 rnd.RNDnet = VAE.Encoder
