@@ -167,8 +167,9 @@ for episode in range(n_episodes):
         print("Episode #", episode, " score: ", rewards.sum().item())
 reward_history.plot()
 plt.show()
-
 ```
+![alt text](https://github.com/omrijsharon/RL_modules/blob/master/Figure_1_cartpole.png)
+
 ### Let's break down the code and understand every part of it:
 
 Creating  the CartPole environment from gym package:
