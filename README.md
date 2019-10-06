@@ -78,7 +78,10 @@ loss = CLIPloss_func(action_old, action, advantage, epsilon=0.3) #with option B:
 #or
 loss = CLIPloss_func(actions, rewards) #with option A: default epsilon=0.2 will be used.
 ```
-where action_old is the output Action object  of <img src="https://latex.codecogs.com/svg.latex?\Large&space;\pi_{\theta_\text{old}}(a\vert{s})" title="\Large \pi_{\theta_\text{old}}(a\vert{s})" />
+where
+- action_old is the output Action object  of <img src="https://latex.codecogs.com/svg.latex?\Large&space;\pi_{\theta_\text{old}}(a\vert{s})" title="\Large \pi_{\theta_\text{old}}(a\vert{s})" />
+- action is the output Action object  of <img src="https://latex.codecogs.com/svg.latex?\Large&space;\pi_{\theta}(a\vert{s})" title="\Large \pi_{\theta}(a\vert{s})" />
+- advantage usually is the output of the old critic model.
 
 ## Entropy loss function
 The entropy loss tries to **maximize** the entropy of the policy distribution to increase exploration.
