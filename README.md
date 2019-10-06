@@ -123,7 +123,7 @@ output_tensor = PolicyNet(state_tensor)
 actions += rl.Action(output_tensor)
 ```
 
-action() returns an integer which represents the last sampled action.
+actions() returns an integer which represents the last sampled action.
 env.step(actions()) gives the envirenment an action and gets its response as a state and reward.
 if done is True, the episode will end.
 state = next_state updates the state for the next loop.
