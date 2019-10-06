@@ -4,7 +4,7 @@ Reinforcement Learning modules for pytorch.
 ## Table of content
 ### Losses:
 - [x] Policy Gradient Loss
-- [ ] CLIP loss (PPO)
+- [x] CLIP loss (PPO)
 - [x] Entropy Loss
 
 ### Objects:
@@ -13,7 +13,7 @@ Reinforcement Learning modules for pytorch.
 - [x] Reward - no documentation!!!
 - [x] RewardHistory - no documentation!!!
 - [ ] MemoryManager
-- [ ] RND (Random Network Distillation)
+- [x] RND (Random Network Distillation) - adding curiosity to your agent
 - [ ] GAE (general advantages estimator)
 
 
@@ -61,7 +61,7 @@ A summarizes of the PPO algorithm:
 https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html#ppo
 
 ### Using CLIPloss
-Combining PGloss and Entropy loss. example:
+Example:
 ```
 import RL_modules as rl
 
@@ -184,6 +184,48 @@ x += rl.Action(torch.randn((20, 5)))
 print(x.size())
 ---> (21, 5)
 ```
+
+
+## RND (Random Network Distillation)
+The goal of RND module is to add curiosity to your agent.
+It can also be used to find anomalies in data, recognize a familiar pathes and much more.
+A good explanation about the algorithm can be found here:
+https://towardsdatascience.com/reinforcement-learning-with-exploration-by-random-network-distillation-a3e412004402
+
+### Using RND
+Before calling RND module, you must initialize 2 networks (architecture issues are discussed in the next part):
+1. RNDnet - a network which will remain frozen and will only be used for calculations. No gradients will pass in this network.
+2. PRDnet - a predictor network which will try to guess the output of the RND network and learn how to be more like RNDnet.
+- _IMPORTANT_: It is recomended to add your own optimizer to PRDnet in advance:
+```
+i.e.: PRDnet.optimizer = optim.Adam(PRDnet.parameters(), lr=1e-3)
+```
+Initializing (after RNDnet and PRDnet exist):
+```
+import RL_modules as rl
+
+
+rnd = RND(RNDnet, PRDnet, memory_capacity = 5000)
+```
+1. Getting the intrinsic RND curiosity reward (immuned to the noisy-TV problem):
+```
+next_state = rl.np2torch(next_state)
+intrinsic_reward = rnd(next_state)
+```
+2. Getting Next-State Prediction (NSP) reward (NOT immuned to the noisy-TV problem):
+```
+state = rl.np2torch(state)
+intrinsic_reward = rnd(torch.cat((state, action.one_hot), dim=-1))
+```
+### Architecture
+The RNDnet and PRDnet can have the same architecture (it is recommended) but they must be initialized with different weights.
+- What should be the dimensions of the input/output of the networks?
+The networks must have the same input/output dimensions. The number of dimensions may differ only in the hidden layers.
+Notice in the last part that in:
+1. The input to the RND module is a state. If you use RND curiosity reward, the networks' input dimension should be the same as the state dimension.
+2. The input to the RND module is a state + action. If you use NSP reward, the networks' input dimension should be the sum of the state and action dimensions.
+
+
 
 ## What is it good for?
 ### Solving openAI gym CartPole in less than 30 lines of code using RL_modules
