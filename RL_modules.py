@@ -24,6 +24,15 @@ def normalize(x):
     return x
 
 
+def calc_discount_rewards(reward_episode, gamma=0.99, norm=True):
+    rewards = copy.deepcopy(reward_episode)
+    for i in range(1, len(rewards)):
+        rewards[-i - 1] += gamma * rewards[-i]
+    if norm is True:
+        rewards = normalize(rewards)
+    return rewards
+
+
 def is_grad_fn(x, grad_fn='Softmax'):
     if hasattr(x, 'grad_fn'):
         result = grad_fn.lower() in (str(x.grad_fn)).lower()
@@ -45,7 +54,19 @@ class PGloss(nn.Module):
         super(PGloss, self).__init__()
 
     def forward(self, log_pi, discounted_rewards):
+        if "Action" in log_pi.__class__.__name__:
+            log_pi = log_pi.log_prob
+        if "Reward" in discounted_rewards.__class__.__name__:
+            discounted_rewards = discounted_rewards()
         return (-log_pi*discounted_rewards).sum()
+
+
+class Entropyloss(nn.Module):
+    def __init__(self):
+        super(Entropyloss, self).__init__()
+
+    def forward(self, action):
+        return -action.entropy.sum()
 
 
 class Action:
@@ -63,7 +84,7 @@ class Action:
                     p = Categorical(logits=pi)
             self.probs = p.probs.view(pi.size(0), -1)
             self.logits = p.logits.view(pi.size(0), -1)
-            self.entropy = p.entropy().view(pi.size(0), -1)
+            self.entropy = p.entropy().view(-1)
             self.idx = p.sample().view(-1)
             self.log_prob = p.log_prob(self.idx).view(-1)
             self.prob = p.probs[torch.arange(len(self.idx)), self.idx].view(-1)
@@ -140,38 +161,63 @@ class Action:
         return len(self.idx)
 
 
-x = Action([])
-print(x)
-x += Action(torch.randn((20, 5), requires_grad=True))
-print(x)
+class Reward:
+    def __init__(self, reward=None):
+        if reward is not None:
+            if 'int' in reward.__class__.__name__ or 'float' in reward.__class__.__name__:
+                self.reward = torch.tensor([1.*reward])
+            elif len(reward)==0:
+                self.reward = torch.tensor([])
+            else:
+                self.reward = np2torch(reward)
+        else:
+            self.reward = torch.tensor([])
 
-
-class RewardMemory:
-    def __init__(self):
-        self.reward_episode = np.array([])
-
-    def reset(self):
-        self.__init__()
+    def __add__(self, other):
+        if 'Reward' in other.__class__.__name__:
+            self.reward = torch.cat((self.reward, other.reward.view(-1)), dim=0)
+        else:
+            if 'Tensor' in other.__class__.__name__:
+                raise TypeError("You tried to combine Reward with Tensor. Convert the Tensor to Reward by: Reward(tensor) before adding it to Reward.")
+            else:
+                raise TypeError("Reward can only be combined with another Reward. You tried to combine Reward with " + other.__class__.__name__ + ".")
+        return self
 
     def push(self, reward):
-        self.reward_episode = torch.cat((self.reward_episode, reward.view(1,-1)), dim=0)
+        self.__add__(reward)
 
-    def __call__(self, *args, **kwargs):
-        self.discount_rewards = self.calc_discount_rewards(*args, **kwargs)
-        return np2torch(self.discount_rewards)
+    def append(self, reward):
+        self.__add__(reward)
 
-    def calc_discount_rewards(self, gamma=0.99, norm=True):
-        rewards = copy.deepcopy(self.reward_episode)
-        for i in range(1, len(rewards)):
-            rewards[-i - 1] += gamma * rewards[-i]
-        if norm is True:
-            rewards = normalize(rewards)
-        return rewards
+    def __getitem__(self, action_idx):
+        reward = Reward([])
+        reward.reward = self.reward[action_idx]
+        return reward
 
-    def plot(self, color='blue', fontsize=18):
-        steps_axis = np.arange(len(self.reward_episode))
-        plt.plot(steps_axis, self.reward_episode, color=color)
-        plt.fill_between(steps_axis, np.zeros(len(steps_axis)), self.discount_rewards, color=color, linewidth=0.0, alpha=0.5)
+    def __call__(self, gamma=0.99, norm=True):
+        self.discount_rewards = calc_discount_rewards(self.reward, gamma=gamma, norm=norm)
+        return self.discount_rewards
+
+    def sum(self):
+        return self.reward.sum()
+
+    def __repr__(self):
+        return 'Reward' + str(self.reward)[6:] + ' Size' + str(self.size())
+
+    def size(self):
+        if self.reward.size()[0] > 0:
+            s = tuple([j for j in self.reward.size()])
+        else:
+            s = (0, 0)
+        return s
+
+    def __len__(self):
+        return len(self.reward)
+
+    def plot(self, color='blue', fontsize=12):
+        steps_axis = np.arange(len(self.reward))
+        plt.plot(steps_axis, self.reward.numpy(), color=color)
+        plt.fill_between(steps_axis, np.zeros(len(steps_axis)), self.discount_rewards.numpy(), color=color, linewidth=0.0, alpha=0.5)
         plt.xlabel('Step number', fontsize=fontsize)
         plt.ylabel('Reward', fontsize=fontsize)
 
@@ -200,31 +246,41 @@ class RewardHistory:
     '''
     * Mostly for plotting.
     '''
-    def __init__(self, running_step=50):
+    def __init__(self, running_steps=50):
         self.history = np.array([])
         self.mean = np.array([])
         self.std = np.array([])
-        self.running_step = running_step
+        self.running_step = running_steps
         self.episode_axis = np.array([])
 
     def reset(self):
         self.__init__()
 
-    def push_mem(self, reward):
-        self.history = np.append(self.history, reward)
-        self.mean = np.append(self.mean, self.history[-self.running_step:].mean())
-        self.std = np.append(self.std, self.history[-self.running_step:].std())
-        self.episode_axis = np.append(self.episode_axis, len(self.history))
+    def __add__(self, other):
+        if 'Reward' in other.__class__.__name__:
+            self.history = np.append(self.history, other.sum().numpy())
+            self.mean = np.append(self.mean, self.history[-self.running_step:].mean())
+            self.std = np.append(self.std, self.history[-self.running_step:].std())
+            self.episode_axis = np.append(self.episode_axis, len(self.history))
+        else:
+            if 'Tensor' in other.__class__.__name__:
+                raise TypeError("RewardHistory object cannot contain a Tensor. Convert the Tensor to Reward by: Reward(tensor) before containing it in a RewardHistory object.")
+            else:
+                raise TypeError("RewardHistory can contain only Reward objects, but you tried to contain " + other.__class__.__name__ + ".")
+        return self
+
+    def append(self, reward):
+        self.__add__(reward)
 
     def push(self, reward):
         if 'list' not in str(type(reward)):
-            self.push_mem(reward)
+            self.__add__(reward)
         else:
             for r in reward:
-                self.push_mem(r)
+                self.__add__(r)
 
-    def plot(self, color='orange', fontsize=18):
-        plt.plot(self.episode_axis, self.history, '.', color=color, alpha=0.5, label='Reward')
+    def plot(self, color='orange', fontsize=12):
+        plt.plot(self.episode_axis, self.history, '.', markeredgewidth=0, color=color, alpha=0.4, label='Reward')
         plt.plot(self.episode_axis, self.mean, color=color, label='Average')
         plt.fill_between(self.episode_axis, self.mean + self.std, self.mean - self.std, color=color, linewidth=0.0, alpha=0.3)
         plt.xlabel('Episode number', fontsize=fontsize)
@@ -233,6 +289,9 @@ class RewardHistory:
 
     def __len__(self):
         return len(self.history)
+
+    def __repr__(self):
+        return 'RewardHistory' + str(self.episode_axis) + ' Size' + str(self.__len__())
 
 class MemoryManager:
     def __init__(self):
