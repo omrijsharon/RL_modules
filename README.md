@@ -4,6 +4,7 @@ Reinforcement Learning modules for pytorch.
 ## Table of content
 ### Losses:
 - [x] Policy Gradient Loss
+- [ ] PPO loss
 - [x] Entropy Loss
 
 ### Objects:
