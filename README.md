@@ -1,15 +1,19 @@
 # RL_modules
 Reinforcement Learning modules for pytorch.
 
-#### Table of content
+## Table of content
+### Losses:
 - [x] Policy Gradient Loss
-- [ ] Entropy Loss
-- [x] Action
-- [ ] Reward
-- [ ] RewardHistory
+- [x] Entropy Loss
+
+### Objects:
+- [x] Action - Categorical/Multinomial
+- [ ] Action - Normal/OUNoise (https://github.com/vitchyr/rlkit/blob/master/rlkit/exploration_strategies/ou_strategy.py)
+- [x] Reward - no documentation!!!
+- [x] RewardHistory - no documentation!!!
 - [ ] MemoryManager
 
-What is it good for?
+### What is it good for? with a code example:
 - [x] Solving openAI gym CartPole in less than 30 lines of code using RL_modules
 - [x] Breaking down the code
 
@@ -25,20 +29,44 @@ The gradient of the loss function is defined by:
 <img src="https://latex.codecogs.com/svg.latex?\Large&space;\nabla_{\theta}J=\mathbb{E}_{\pi_{\theta}}[\nabla_{\theta}log(\pi_{\theta})Q^{\pi_{\theta}}(s,a)]" title="\Large \nabla_{\theta}J=\mathbb{E}_{\pi_{\theta}}[\nabla_{\theta}log(\pi_{\theta})Q^{\pi_{\theta}}(s,a)]" />
 
 ### Using PGloss
-
 Similar to using any pytorch loss function, we declare the loss function in the begining and use it later. i.e.:
 ```
 import RL_modules as rl
 
 #beginning of the code
-loss_func = rl.PGloss()
+PGloss_func = rl.PGloss()
 
 #backprop:
-loss = loss_func(log_pi, Q)
+loss = PGloss_func(log_pi, Q)
+#or
+loss = PGloss_func(actions.probs, Q)
+#or
+loss = PGloss_func(actions, Q)
+#or
+loss = PGloss_func(actions, rewards)
 ```
+where log_pi and actions.probs are the log of the sampled actions probability, actions is an Action object and rewards is a Reward object.
+
 
 -_IMPORTANT_: This function causes the gradients to **accent** (as they should) when using any optimizer for gradient descent. So use the function 'as is'.
 
+## Entropy loss function
+The entropy loss tries to **maximize** the entropy of the policy distribution.
+
+### Using Entropyloss
+Combining PGloss and Entropy loss. example:
+```
+import RL_modules as rl
+
+#beginning of the code
+PGloss_func = rl.PGloss()
+Entropyloss_func = rl.Entropyloss()
+
+#backprop:
+loss = PGloss_func(actions, Q) + beta * Entropyloss_func(actions)
+```
+
+- beta is a regularization factor for the Entropy loss.
 
 ## Action module
 
@@ -167,8 +195,9 @@ for episode in range(n_episodes):
         print("Episode #", episode, " score: ", rewards.sum().item())
 reward_history.plot()
 plt.show()
-
 ```
+![alt text](https://github.com/omrijsharon/RL_modules/blob/master/Figure_1_cartpole.png)
+
 ### Let's break down the code and understand every part of it:
 
 Creating  the CartPole environment from gym package:
