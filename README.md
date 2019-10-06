@@ -238,8 +238,12 @@ You can choose the output dimensions of the RNDnet and PRDnet with no constraint
 A recommended number of dimentions for the output is 2-4.
 
 ### Updating PRDnet
-
-
+Each time you used rnd, such as intrinsic_reward = rnd(next_state), the input was saved but not learned. To start learning the saved inputs, write:
+```
+rnd.learn(n_epochs=10, chunk_size=1000)
+```
+This line says that the the inputs will be processed in chunks of 1000 (big chunks needs lots of memory).
+n_ epochs is the number of epochs in learning process (the number of optimizer steps).
 
 ### Encoder-Decoder/Autoencoder + RND
 Encoder-Decoder or autoencoder networks can be also used with RND. Insert the Encoder part of the network as an RNDnet. Let the bottleneck be the output layer and initialize PRDnet with the same architecture as the Encoder. Since the Encoder changes as it learns, you should update the RNDnet when it happens. i.e.:
