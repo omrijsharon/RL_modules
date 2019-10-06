@@ -96,7 +96,7 @@ Looping over the environment for n_episodes and initializing the environment:
 for episode in range(n_episodes):
     state = env.reset()
 ```
-Initializing Action and Reward modules:
+Initializing empty Action and Reward modules:
 ```
     actions = rl.Action([])
     rewards = rl.Reward([])
