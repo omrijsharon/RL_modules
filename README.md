@@ -301,7 +301,7 @@ Adding/appending the cumulative reward from the last episode to a RewardHistory 
 ```
 reward_history += rewards
 ```
-Updating us every 10 episodes with the cumulative reward of the last episode:
+Updating every 10 episodes with the cumulative reward of the last episode:
 ```
 if episode%10 == 0:
     print("Episode #", episode, " score: ", rewards.sum().item())
