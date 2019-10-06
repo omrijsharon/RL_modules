@@ -106,7 +106,10 @@ Setting done to False and starting to interact with the environment. The environ
     done = False
         while done is False:
 ```
-The following commands:
+The following commands are all contained in this line:
+```
+        actions += rl.Action(PolicyNet(rl.np2torch(state)))
+```
 - np2torch converts a numpy array to a torch tensor: 
 ```
 state_tensor = rl.np2torch(state_array)
@@ -119,10 +122,7 @@ output_tensor = PolicyNet(state_tensor)
 ```
 actions += rl.Action(output_tensor)
 ```
-contained in this line:
-```
-        actions += rl.Action(PolicyNet(rl.np2torch(state)))
-```
+
 action() returns an integer which represents the last sampled action.
 env.step(actions()) gives the envirenment an action and gets its response as a state and reward.
 if done is True, the episode will end.
