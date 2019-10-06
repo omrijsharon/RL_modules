@@ -196,9 +196,9 @@ https://towardsdatascience.com/reinforcement-learning-with-exploration-by-random
 Before calling RND module, you must initialize 2 networks (architecture issues are discussed in the next part):
 1. RNDnet - a network which will remain frozen and will only be used for calculations. No gradients will pass in this network.
 2. PRDnet - a predictor network which will try to guess the output of the RND network and learn how to be more like RNDnet.
-- _IMPORTANT_: It is recomended to add your own optimizer to PRDnet in advance:
+- _IMPORTANT_: It is recomended to add your own optimizer to PRDnet in advance. i.e.:
 ```
-i.e.: PRDnet.optimizer = optim.Adam(PRDnet.parameters(), lr=1e-3)
+PRDnet.optimizer = optim.Adam(PRDnet.parameters(), lr=1e-3)
 ```
 Initializing (after RNDnet and PRDnet exist):
 ```
