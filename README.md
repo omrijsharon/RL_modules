@@ -51,7 +51,7 @@ where log_pi and actions.probs are the log of the sampled actions probability, a
 -_IMPORTANT_: This function causes the gradients to **accent** (as they should) when using any optimizer for gradient descent. So use the function 'as is'.
 
 ## Entropy loss function
-The entropy loss tries to **maximize** the entropy of the policy distribution.
+The entropy loss tries to **maximize** the entropy of the policy distribution to increase exploration.
 
 ### Using Entropyloss
 Combining PGloss and Entropy loss. example:
