@@ -4,7 +4,7 @@ Reinforcement Learning modules for pytorch.
 ## Table of content
 ### Losses:
 - [x] Policy Gradient Loss
-- [ ] PPO loss
+- [ ] CLIP loss (PPO)
 - [x] Entropy Loss
 
 ### Objects:
@@ -53,6 +53,17 @@ where log_pi and actions.probs are the log of the sampled actions probability, a
 
 
 -_IMPORTANT_: This function causes the gradients to **accent** (as they should) when using any optimizer for gradient descent. So use the function 'as is'.
+
+## CLIP loss function (PPO)
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;J^\text{CLIP} (\theta) = \mathbb{E} [ \min( r(\theta) \hat{A}_{\theta_\text{old}}(s, a), \text{clip}(r(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_{\theta_\text{old}}(s, a))]" title="\Large J^\text{CLIP} (\theta) = \mathbb{E} [ \min( r(\theta) \hat{A}_{\theta_\text{old}}(s, a), \text{clip}(r(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_{\theta_\text{old}}(s, a))]" />
+The entropy loss tries to **maximize** the entropy of the policy distribution to increase exploration.
+
+### Using CLIPloss
+Combining PGloss and Entropy loss. example:
+```
+import RL_modules as rl
+
+#beginning of the code
 
 ## Entropy loss function
 The entropy loss tries to **maximize** the entropy of the policy distribution to increase exploration.
