@@ -26,12 +26,12 @@ import matplotlib.pyplot as plt
 
 
 env = gym.make('CartPole-v1') #create the environment
-#Hyperparameters
+#Parameters and Hyperparameters
+n_episodes = 200
 lr = 1e-2 #learning_rate
 beta = 1e-6 #entropy loss coefficient
 gamma = 0.99 #discount factor
-# Parameters
-n_episodes = 200
+
 torch.manual_seed(41)
 PolicyNet = Network(L=[4,*1*[8],2], lr=lr, optimizer='RMSprop', dropout=0)
 PolicyNet.PGloss = rl.PGloss()
@@ -59,6 +59,20 @@ reward_history.plot()
 plt.show()
 
 ```
+### Let's break down the code and understand every part of it:
+
+Creating  the CartPole environment from gym package:
+```
+env = gym.make('CartPole-v1') #create the environment
+```
+Defining parameters and hyperparametes:
+```
+lr = 1e-2 #learning_rate
+beta = 1e-6 #entropy loss coefficient
+gamma = 0.99 #discount factor
+n_episodes = 200
+```
+
 
 ## Policy Gradient loss function
 The gradient of the loss function is defined by:
