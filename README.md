@@ -1,18 +1,18 @@
 # RL_modules
 Reinforcement Learning modules for pytorch.
 
-#### Table of content
-Losses:
+## Table of content
+### Losses:
 - [x] Policy Gradient Loss
 - [ ] Entropy Loss
 
-Objects:
+### Objects:
 - [x] Action
 - [ ] Reward
 - [ ] RewardHistory
 - [ ] MemoryManager
 
-What is it good for? Example:
+### What is it good for? with a code example:
 - [x] Solving openAI gym CartPole in less than 30 lines of code using RL_modules
 - [x] Breaking down the code
 
@@ -62,7 +62,7 @@ PGloss_func = rl.PGloss()
 Entropyloss_func = rl.Entropyloss()
 
 #backprop:
-loss = PGloss_func(log_pi, Q) + beta * Entropyloss_func(action)
+loss = PGloss_func(actions, Q) + beta * Entropyloss_func(actions)
 ```
 
 - beta is a regularization factor for the Entropy loss.
