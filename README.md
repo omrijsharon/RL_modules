@@ -137,6 +137,7 @@ Rendering the environment. For faster preformance, delete this line or make it a
 env.render()
 ```
 rewards(gamma, norm=True) returns normalized dicounted reward.
+
 PGloss gets 2 arguments.
 1. log_pi tensor or actions.log_prob or just an Action object.
 PGloss knows to handle with an Action object and get its log_prob attribute automatically.
