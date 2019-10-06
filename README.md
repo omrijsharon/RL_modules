@@ -8,6 +8,7 @@ Reinforcement Learning modules for pytorch.
 - [ ] Reward
 - [ ] RewardHistory
 - [ ] MemoryManager
+
 What is it good for?
 - [x] Solving openAI gym CartPole in less than 30 lines of code using RL_modules
 - [x] Breaking down the code
