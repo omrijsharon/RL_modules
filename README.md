@@ -213,7 +213,8 @@ Then use one of the two:
 next_state = rl.np2torch(next_state)
 intrinsic_reward = rnd(next_state)
 ```
-                          _OR_
+
+_OR_
 2. Getting Next-State Prediction (NSP) reward (NOT immuned to the noisy-TV problem):
 ```
 state = rl.np2torch(state)
