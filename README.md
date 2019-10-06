@@ -14,6 +14,52 @@ Reinforcement Learning modules for pytorch.
 - PyTorch 1.1
 - numpy 1.16
 
+## What is it good for?
+### Solving openAI gym CartPole in less than 30 code lines with RL_modules
+Using REINFORCE algorithm + plotting the results. Example:
+```
+import torch
+import gym
+from NetworkModule import Network
+import RL_modules as rl
+import matplotlib.pyplot as plt
+
+
+env = gym.make('CartPole-v1') #create the environment
+#Hyperparameters
+lr = 1e-2 #learning_rate
+beta = 1e-6 #entropy loss coefficient
+gamma = 0.99 #discount factor
+# Parameters
+n_episodes = 200
+torch.manual_seed(41)
+PolicyNet = Network(L=[4,*1*[8],2], lr=lr, optimizer='RMSprop', dropout=0)
+PolicyNet.PGloss = rl.PGloss()
+PolicyNet.Entropyloss = rl.Entropyloss()
+reward_history = rl.RewardHistory(running_steps=10)
+for episode in range(n_episodes):
+    state = env.reset()
+    actions = rl.Action([])
+    rewards = rl.Reward([])
+    done = False
+    while done is False:
+        actions += rl.Action(PolicyNet(rl.np2torch(state)))
+        next_state, reward, done, info = env.step(actions())
+        rewards.append(rl.Reward(reward))
+        state = next_state
+        # env.render()
+    loss = PolicyNet.PGloss(actions, rewards(gamma, norm=True)) + beta*PolicyNet.Entropyloss(actions)
+    PolicyNet.optimizer.zero_grad()
+    loss.backward()
+    PolicyNet.optimizer.step()
+    reward_history += rewards
+    if episode%10 == 0:
+        print("Episode #", episode, " score: ", rewards.sum().item())
+reward_history.plot()
+plt.show()
+
+```
+
 ## Policy Gradient loss function
 The gradient of the loss function is defined by:
 <img src="https://latex.codecogs.com/svg.latex?\Large&space;\nabla_{\theta}J=\mathbb{E}_{\pi_{\theta}}[\nabla_{\theta}log(\pi_{\theta})Q^{\pi_{\theta}}(s,a)]" title="\Large \nabla_{\theta}J=\mathbb{E}_{\pi_{\theta}}[\nabla_{\theta}log(\pi_{\theta})Q^{\pi_{\theta}}(s,a)]" />
