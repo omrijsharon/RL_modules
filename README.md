@@ -3,10 +3,10 @@ Reinforcement Learning modules for pytorch.
 
 #### Table of content
 - [x] Policy Gradient Loss
+- [ ] Entropy Loss
 - [x] Action
-- [x] StateMemory
-- [x] RewardMemory
-- [x] RewardHistory
+- [ ] Reward
+- [ ] RewardHistory
 - [ ] MemoryManager
 
 
