@@ -4,12 +4,13 @@ Reinforcement Learning modules for pytorch.
 ## Table of content
 ### Losses:
 - [x] Policy Gradient Loss
-- [ ] Entropy Loss
+- [x] Entropy Loss
 
 ### Objects:
-- [x] Action
-- [ ] Reward
-- [ ] RewardHistory
+- [x] Action - Categorical/Multinomial
+- [ ] Action - Normal/OUNoise (https://github.com/vitchyr/rlkit/blob/master/rlkit/exploration_strategies/ou_strategy.py)
+- [x] Reward - no documentation!!!
+- [x] RewardHistory - no documentation!!!
 - [ ] MemoryManager
 
 ### What is it good for? with a code example:
