@@ -47,7 +47,7 @@ for episode in range(n_episodes):
         next_state, reward, done, info = env.step(actions())
         rewards.append(rl.Reward(reward))
         state = next_state
-        # env.render()
+        env.render()
     loss = PolicyNet.PGloss(actions, rewards(gamma, norm=True)) + beta*PolicyNet.Entropyloss(actions)
     PolicyNet.optimizer.zero_grad()
     loss.backward()
@@ -91,13 +91,81 @@ Initializing a RewardHistory module. This module will save the cumulative reward
 ```
 reward_history = rl.RewardHistory(running_steps=10)
 ```
-Initializing
+Looping over the environment for n_episodes and initializing the environment:
 ```
 for episode in range(n_episodes):
     state = env.reset()
+```
+Initializing Action and Reward modules:
+```
     actions = rl.Action([])
     rewards = rl.Reward([])
+```
+Setting done to False and starting to interact with the environment. The environment sets done to be True in the end of an episode.
+```
     done = False
+        while done is False:
+```
+The following commands:
+- np2torch converts a numpy array to a torch tensor: 
+```
+state_tensor = rl.np2torch(state_array)
+```
+- Running tensored state in the Policy network and outputing a tensor with size 2.
+```
+output_tensor = PolicyNet(state_tensor)
+```
+- Converting the Policy network output to an Action object and adding/appending it to the last actions
+```
+actions += rl.Action(output_tensor)
+```
+contained in this line:
+```
+        actions += rl.Action(PolicyNet(rl.np2torch(state)))
+```
+action() returns an integer which represents the last sampled action.
+env.step(actions()) gives the envirenment an action and gets its response as a state and reward.
+if done is True, the episode will end.
+state = next_state updates the state for the next loop.
+```
+        next_state, reward, done, info = env.step(actions())
+        rewards.append(rl.Reward(reward))
+        state = next_state
+```
+Rendering the environment. For faster preformance, delete this line or make it a comment with #.
+```
+env.render()
+```
+rewards(gamma, norm=True) returns normalized dicounted reward.
+PGloss gets 2 arguments.
+1. log_pi tensor or actions.log_prob or just an Action object.
+PGloss knows to handle with an Action object and get its log_prob attribute automatically.
+2. dicounted_rewards tensor or rewards(gamma, norm=True) or rewards.
+PGloss knows to handle with a Reward object. Using only rewards (without the brackets) will result using default arguments.
+
+Entropyloss gets an Action object and returns -action.entropy.sum(). Minimization of this loss results in more exploration and less certainty in the actions the agents is choosing. This effect will increase with beta.
+```
+loss = PolicyNet.PGloss(actions, rewards(gamma, norm=True)) + beta*PolicyNet.Entropyloss(actions)
+```
+zeroing grads, backpropagating the loss, walking one step in the gradient direction:
+```
+    PolicyNet.optimizer.zero_grad()
+    loss.backward()
+    PolicyNet.optimizer.step()
+```
+Adding/appending the cumulative reward from the last episode to a RewardHistory object so we can plot it and see the learning progress of the agent:
+```
+reward_history += rewards
+```
+Updating us every 10 episodes with the cumulative reward of the last episode:
+```
+if episode%10 == 0:
+    print("Episode #", episode, " score: ", rewards.sum().item())
+```
+Plotting the raw cumulative reward, its running mean and its running standard deviation:
+```
+reward_history.plot()
+plt.show()
 ```
 
 ## Policy Gradient loss function
