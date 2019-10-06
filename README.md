@@ -207,6 +207,8 @@ import RL_modules as rl
 
 rnd = RND(RNDnet, PRDnet, memory_capacity = 5000)
 ```
+In this case, the RND module will save up to 5000 inputs to learn from. When reaching the memory_capacity, random inputs will be deleted. This should prevent catastrophic forgetting.
+
 Then use one of the two:
 1. Getting the intrinsic RND curiosity reward (immuned to the noisy-TV problem):
 ```
@@ -234,6 +236,10 @@ You can choose the output dimensions of the RNDnet and PRDnet with no constraint
 2. Higher dimentsion in the output layer might slow down the calculations and the learning process.
 
 A recommended number of dimentions for the output is 2-4.
+
+### Updating PRDnet
+
+
 
 ### Encoder-Decoder/Autoencoder + RND
 Encoder-Decoder or autoencoder networks can be also used with RND. Insert the Encoder part of the network as an RNDnet. Let the bottleneck be the output layer and initialize PRDnet with the same architecture as the Encoder. Since the Encoder changes as it learns, you should update the RNDnet when it happens. i.e.:
