@@ -7,8 +7,8 @@ Reinforcement Learning modules for pytorch.
 - [x] Entropy Loss
 
 ### Objects:
-- [x] Action - Categorical/Multinomial
-- [ ] Action - Normal/OUNoise (https://github.com/vitchyr/rlkit/blob/master/rlkit/exploration_strategies/ou_strategy.py)
+- [x] Action - discrete (Categorical/Multinomial)
+- [ ] Action - continuous (Normal/OUNoise (https://github.com/vitchyr/rlkit/blob/master/rlkit/exploration_strategies/ou_strategy.py))
 - [x] Reward - no documentation!!!
 - [x] RewardHistory - no documentation!!!
 - [ ] MemoryManager
