@@ -231,7 +231,7 @@ Notice from the last part that:
 ##### Output dimensions
 You can choose the output dimensions of the RNDnet and PRDnet with no constraints. Yet, you must remember:
 1. The length of a diagonal of a 1x1 square is <img src="https://latex.codecogs.com/svg.latex?\Large&space;\sqrt{2}" title="\Large \sqrt{2}" />. The length of a diagonal of a 1x1x1 cube is <img src="https://latex.codecogs.com/svg.latex?\Large&space;\sqrt{3}" title="\Large \sqrt{3}" />. The higher the dimention, the more volume the shape has and the farther away random points within the shape are.
-2. Higher dimentsion in the output layer might slow down the calculations and learning process.
+2. Higher dimentsion in the output layer might slow down the calculations and the learning process.
 
 A recommended number of dimentions for the output is 2-4.
 
