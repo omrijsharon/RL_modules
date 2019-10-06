@@ -106,7 +106,7 @@ Setting done to False and starting to interact with the environment. The environ
     done = False
         while done is False:
 ```
-The following commands are all contained in this line:
+The following bulleted commands are all contained in this line:
 ```
         actions += rl.Action(PolicyNet(rl.np2torch(state)))
 ```
