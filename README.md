@@ -238,7 +238,7 @@ You can choose the output dimensions of the RNDnet and PRDnet with no constraint
 A recommended number of dimentions for the output is 2-4.
 
 ### Updating PRDnet
-Each time you used rnd, such as intrinsic_reward = rnd(next_state), the input was saved but not learned. To start learning the saved inputs, write:
+Each time you use rnd, such as rnd(next_state), the input is saved but not learned. To start learning the saved inputs, write:
 ```
 rnd.learn(n_epochs=10, chunk_size=1000)
 ```
