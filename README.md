@@ -70,9 +70,35 @@ Defining parameters and hyperparametes:
 lr = 1e-2 #learning_rate
 beta = 1e-6 #entropy loss coefficient
 gamma = 0.99 #discount factor
-n_episodes = 200
+n_episodes = 200 #number of episodes
 ```
-
+Initializing a policy network using NetworkModule(https://github.com/omrijsharon/NetworkModule).
+The Policy network suppose to get a state and outputs a number for each action (that becomes actions distribution later on).
+The network architecture:
+- an input layer with 4 nodes - because the state shape is 4.
+- 1 hidden layer with 8 nodes - these numbers are hyperparameters.
+- an output layer with 2 nodes: - because the action space has 2 discrete actions.
+```
+torch.manual_seed(41)
+PolicyNet = Network(L=[4,*1*[8],2], lr=lr, optimizer='RMSprop', dropout=0)
+```
+Setting loss attributes with loss functions to the Policy network:
+```
+PolicyNet.PGloss = rl.PGloss()
+PolicyNet.Entropyloss = rl.Entropyloss()
+```
+Initializing a RewardHistory module. This module will save the cumulative reward of each episode. It will calculate the mean and the standard deviation of last 10 cumulative rewards (running mean and running std).
+```
+reward_history = rl.RewardHistory(running_steps=10)
+```
+Initializing
+```
+for episode in range(n_episodes):
+    state = env.reset()
+    actions = rl.Action([])
+    rewards = rl.Reward([])
+    done = False
+```
 
 ## Policy Gradient loss function
 The gradient of the loss function is defined by:
