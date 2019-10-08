@@ -245,8 +245,8 @@ rnd.learn(n_epochs=10, chunk_size=1000)
 This line says that the the inputs will be processed in chunks of 1000 (big chunks need more memory but make the calculations faster).
 n_epochs is the number of epochs in learning process (the number of optimizer steps).
 
-### Encoder-Decoder/Autoencoder + RND
-Encoder-Decoder or autoencoder networks can also be used with RND. Insert the Encoder part of the network as an RNDnet. Let the bottleneck be the output layer and initialize PRDnet with the same architecture as the Encoder. Since the Encoder changes as it learns, you should update the RNDnet when it happens. i.e.:
+### RND + Encoder-Decoder/Autoencoder
+RND can also be used with Encoder-Decoder or autoencoder networks. Insert the Encoder part of the network as an RNDnet. Let the bottleneck be the output layer and initialize PRDnet with the same architecture as the Encoder. Since the Encoder changes as it learns, you should update the RNDnet when it happens. i.e.:
 ```
 VAE.optimizer.step()
 rnd.RNDnet = VAE.Encoder
