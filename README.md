@@ -242,7 +242,7 @@ Each time you use RND module to get the RND_reward (i.e.: RND_reward = rnd(next_
 ```
 rnd.learn(n_epochs=10, chunk_size=1000)
 ```
-This line says that the the inputs will be processed in chunks of 1000 (big chunks needs lots of memory).
+This line says that the the inputs will be processed in chunks of 1000 (big chunks need lots of memory).
 n_ epochs is the number of epochs in learning process (the number of optimizer steps).
 
 ### Encoder-Decoder/Autoencoder + RND
