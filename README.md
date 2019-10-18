@@ -57,7 +57,7 @@ where log_pi and actions.probs are the log of the sampled actions probability, a
 ## CLIP loss function (PPO)
 <img src="https://latex.codecogs.com/svg.latex?\Large&space;J^\text{CLIP}(\theta)=\mathbb{E}[\min(r(\theta)\hat{A}_{\theta_\text{old}}(s,a),\text{clip}(r(\theta),1-\epsilon,1+\epsilon)\hat{A}_{\theta_\text{old}}(s,a))]" title="\Large J^\text{CLIP} (\theta) = \mathbb{E} [ \min( r(\theta) \hat{A}_{\theta_\text{old}}(s, a), \text{clip}(r(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_{\theta_\text{old}}(s, a))]" />
 
-A summarizes of the PPO algorithm:
+A summarize of the PPO algorithm:
 https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html#ppo
 
 ### Using CLIPloss
