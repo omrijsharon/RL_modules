@@ -10,9 +10,9 @@ Reinforcement Learning modules for pytorch.
 ### Objects:
 - [x] Action - discrete (Categorical/Multinomial)
 - [ ] Action - continuous (Normal/OUNoise (https://github.com/vitchyr/rlkit/blob/master/rlkit/exploration_strategies/ou_strategy.py))
-- [x] Reward - no documentation!!!
-- [x] RewardHistory - no documentation!!!
-- [ ] MemoryManager
+- [x] Reward - no documentation yet
+- [x] RewardHistory - no documentation yet
+- [ ] ExperienceReplay
 - [x] RND (Random Network Distillation) - adding curiosity to your agent
 - [ ] GAE (general advantages estimator)
 
